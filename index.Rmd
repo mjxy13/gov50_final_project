@@ -9,9 +9,56 @@ output:
 
 
 
-## Project thoughts
+## Project thoughts (milestone 1)
 
 I am interested in exploring data related to the effect of media and social media on the polarization of politics in the United States. I would also like to explore the effect of media on views regarding immigration, the LGBTQ+ community, etc. Another topic I am considering is the level anti-Asian sentiment throughout the course of the pandemic to now. 
 
-## Project proposal
+## Project proposal (milestone 2)
 Does exposure to other racial groups influence political beliefs? In this study, I plan to examine the extent to which exposure to racial groups other than the one an individual identifies with influences one’s political views. I hypothesize that individuals who have more exposure to other racial groups tend to vote more liberal on political issues. This hypothesis arises from the observation that cities, which have more diverse populations, tend to vote more liberally than suburbs and rural areas, which have less diverse populations. My sample is comprised of the individuals who took the General Social Survey. The explanatory variable for this study is whether the respondent responded “yes” or “no” to the question “Are there any (“whites” for black respondents, “blacks” for non-black respondents) living in this neighborhood now?” My outcome variable is how the two groups voted on various political issues, such as their views on abortions, healthcare, and welfare. These questions would reveal whether the individuals hold more conservative or liberal views, and I would find the mean response grouped by the respondent’s response to the question of whether they live close to other racial groups. If I observe that respondents who answered “yes” to the question “Are there any (“whites” for black respondents, “blacks” for non-black respondents) living in this neighborhood now?” and respondents who answered “no” have different responses to the secondary questions, this would hint that exposure to different racial groups does affect an individual’s political views, which would support my hypothesis. However, if the groups have around the same responses to the secondary questions, this would provide evidence against my hypothesis. 
+
+
+## Data visualization (milestone 3)
+
+```{r}
+library(tidyverse) 
+
+statement <- read.csv("district_tabular_data.csv")
+head(statement)
+```
+
+```{r}
+statement |>
+  drop_na(majority_vote) |>
+  group_by(majority_vote) |>
+  summarize(mean_DEI = mean(topic_diversity_equity_and_inclusion))
+```
+
+```{r}
+statement |>
+  drop_na(majority_vote) |>
+  group_by(majority_vote, urbanicity) |>
+  summarize(mean_DEI = mean(topic_diversity_equity_and_inclusion))
+```
+
+
+```{r}
+statement |>
+  group_by(urbanicity) |>
+  summarize(mean_DEI = mean(topic_diversity_equity_and_inclusion))
+```
+
+```{r}
+statement |>
+  group_by(hh_median_income_category) |>
+  summarize(mean_intellectual = mean(word_intellectual)) |>
+  ggplot(mapping = aes(x = hh_median_income_category, y = mean_intellectual)) + 
+  geom_col(fill = "lightpink") +
+  labs(
+    x = "Median Income of Neighborhood",
+    y = "Proportion of School Statement that Mention 'Intellectual'",
+    title = "Occurances of the word 'Intellectual' in School Statements Based 
+    on Neighborhood Income"
+  ) +
+  coord_cartesian(ylim = c(0, 0.15))
+```
+
