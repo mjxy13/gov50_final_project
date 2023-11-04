@@ -19,7 +19,7 @@ Does exposure to other racial groups influence political beliefs? In this study,
 
 ## Data visualization (milestone 3)
 
-Since the last milestone, I found a new data set that I think is more interesting to explore. In my Gened course on meritocracy, we have been talking about the harmful effects of the rhetoric of rising in education and the unequal access to education. Therefore, I thought it would be interesting to see how the median income of the neighborhood the school district is in affects the issues and goals the school district cares about, as shown through their public statement. For this milestone, I found and visualized the proportion of school district statements that mention the word "Intellectual" after grouping by neighborhood income. 
+Since the last milestone, I found a new data set that I think is more interesting to explore. In my Gened course on meritocracy, we have been talking about the harmful effects of the rhetoric of rising in education and the unequal access to education. Therefore, I thought it would be interesting to see how the median income of the neighborhood the school district is in affects the issues and goals the school district cares about, as shown through their public statement. For this milestone, I found and visualized the proportion of school district statements that mention the word "Intellectual" after grouping by neighborhood income.  
 
 ```{r}
 library(tidyverse) 
