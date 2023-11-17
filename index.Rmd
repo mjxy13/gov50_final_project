@@ -105,7 +105,7 @@ ate_low_income_urban <- statement |>
   ) |>
   mutate(ATE = Treatment - Control)
 
-ate_low_income_urban
+knitr::kable(ate_low_income_urban, col.names = c("Geographical Area", "Control (Medium Income)","Treatment (Low Income)","ATE"))
 ```
 
 ```{r}
@@ -122,13 +122,13 @@ ate_high_income_urban <- statement |>
   ) |>
   mutate(ATE = Treatment - Control)
 
-ate_high_income_urban
+knitr::kable(ate_high_income_urban, col.names = c("Geographical Area", "Control (Medium Income)","Treatment (High Income)","ATE"))
 ```
 
 For this part, I grouped the income groups by the geographical area and found the average treatment effect. I found that the treatment of having a low median income has the highest average treatment effect on rural areas, resulting in an average of 3.33% decrease in the prevalence of the word "intellectual" in the school district statement. With the treatment of having a high median income, the average treatment effect is highest in suburban areas, resuling in an avergae of 6.94% increase in the prevalence of the word "intellectual" in school district statements. 
 
 ```{r}
-statement |>
+avg_cat <- statement |>
   summarize(
     across(topic_academic_program:word_extracurricular, mean)
   )
@@ -145,7 +145,7 @@ ate_academic_high_income <- statement |>
   ) |>
   mutate(ATE = high_median_income - medium_median_income)
 
-ate_academic_high_income
+knitr::kable(ate_academic_high_income, col.names = c("Geographical Area", "Treatment (High Income)", "Control (Medium Income)","ATE"))
 ```
 
 ```{r}
@@ -159,7 +159,7 @@ ate_academic_low_income <- statement |>
   ) |>
   mutate(ATE = low_median_income - medium_median_income)
 
-ate_academic_low_income
+knitr::kable(ate_academic_low_income, col.names = c("Geographical Area", "Treatment (Low Income)", "Control (Medium Income)","ATE"))
 ```
 
 In this last analysis, I looked at the effect of income on the prevalence of the topic of academic programs in school district statments grouped by geographical areas. The treatment of having a high median income has the largest average treatment effect in rural areas. Among urban areas, there is virtually no difference between neighborhoods with high median income (treatment) or medium median income (control) in terms of how much the topic of academic programs show up in the school district statement. The treatment of having a low median income has the largest average treatment effect in suburban areas. Among rural areas, there is virtually no difference between neighborhoods with low median income (treatment) or medium median income (control). 
