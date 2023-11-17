@@ -28,7 +28,7 @@ statement <- read.csv("district_tabular_data.csv")
 ```
 
 ```{r}
-statement |>
+plot1 <- statement |>
   group_by(hh_median_income_category) |>
   summarize(mean_intellectual = mean(word_intellectual)) |>
   ggplot(mapping = aes(x = hh_median_income_category, y = mean_intellectual)) + 
@@ -40,5 +40,126 @@ statement |>
     on Neighborhood Income"
   ) +
   coord_cartesian(ylim = c(0, 0.15))
+
+plot1
 ```
 
+## Analysis (Milestone 4)
+
+```{r}
+statement |>
+  group_by(hh_median_income_category, white_share_category) |>
+  summarize(n = n()) |>
+  mutate(prop = n/sum(n))
+```
+
+In this chunck, I checked how balanced the different income groups are by looking at the proportion of white people in each income group. The proportions are roughly balanced across the different income groups, which means that we can treat the treatment as randomly assigned and procede with the observational study. 
+
+```{r}
+ate_high_income <- statement |>
+  filter(hh_median_income_category != "low_median_income") |>
+  mutate(
+    treatment = 
+      if_else(hh_median_income_category == "high_median_income", "Treatment", "Control")) |>
+  group_by(treatment, white_share_category) |>
+  summarize(mean_intellectual = mean(word_intellectual)) |>
+  pivot_wider(
+    names_from = treatment,
+    values_from = mean_intellectual
+  ) |>
+  mutate(ATE = Treatment - Control)
+
+knitr::kable(ate_high_income, col.names = c("Proportion White", "Control", "Treatment", "ATE"))
+```
+
+```{r}
+ate_low_income <- statement |>
+  filter(hh_median_income_category != "high_median_income") |>
+  mutate(
+    treatment = 
+      if_else(hh_median_income_category == "low_median_income", "Treatment", "Control")) |>
+  group_by(treatment, white_share_category) |>
+  summarize(mean_intellectual = mean(word_intellectual)) |>
+  pivot_wider(
+    names_from = treatment,
+    values_from = mean_intellectual
+  ) |>
+  mutate(ATE = Treatment - Control)
+
+knitr::kable(ate_low_income, col.names = c("Proportion White", "Control", "Treatment", "ATE"))
+```
+
+In the previous two chunks, I found the average treatment effect of a school district's income level on the prevalence of the word "intellectual" in the school district statement. I treated the median income group as the control group and the high and low income group as treatment A and treatment B respectively. I also sorted the income groups based on the proportion of white people in the community. Regarding the treatment of having high median income, the average treatment effect on the prevalence of the word "intellectual" is slight highter in communities with a lower share of white residents. 
+
+```{r}
+ate_low_income_urban <- statement |>
+  filter(hh_median_income_category != "high_median_income") |>
+  mutate(
+    treatment = 
+      if_else(hh_median_income_category == "low_median_income", "Treatment", "Control")) |>
+  group_by(treatment, urbanicity) |>
+  summarize(mean_intellectual = mean(word_intellectual)) |>
+  pivot_wider(
+    names_from = treatment,
+    values_from = mean_intellectual
+  ) |>
+  mutate(ATE = Treatment - Control)
+
+ate_low_income_urban
+```
+
+```{r}
+ate_high_income_urban <- statement |>
+  filter(hh_median_income_category != "low_median_income") |>
+  mutate(
+    treatment = 
+      if_else(hh_median_income_category == "high_median_income", "Treatment", "Control")) |>
+  group_by(treatment, urbanicity) |>
+  summarize(mean_intellectual = mean(word_intellectual)) |>
+  pivot_wider(
+    names_from = treatment,
+    values_from = mean_intellectual
+  ) |>
+  mutate(ATE = Treatment - Control)
+
+ate_high_income_urban
+```
+
+For this part, I grouped the income groups by the geographical area and found the average treatment effect. I found that the treatment of having a low median income has the highest average treatment effect on rural areas, resulting in an average of 3.33% decrease in the prevalence of the word "intellectual" in the school district statement. With the treatment of having a high median income, the average treatment effect is highest in suburban areas, resuling in an avergae of 6.94% increase in the prevalence of the word "intellectual" in school district statements. 
+
+```{r}
+statement |>
+  summarize(
+    across(topic_academic_program:word_extracurricular, mean)
+  )
+```
+
+```{r}
+ate_academic_high_income <- statement |>
+  filter(hh_median_income_category != "low_median_income") |>
+  group_by(hh_median_income_category, urbanicity) |>
+  summarize(mean_academic = mean(topic_academic_program)) |>
+  pivot_wider(
+    names_from = hh_median_income_category,
+    values_from = mean_academic
+  ) |>
+  mutate(ATE = high_median_income - medium_median_income)
+
+ate_academic_high_income
+```
+
+```{r}
+ate_academic_low_income <- statement |>
+  filter(hh_median_income_category != "high_median_income") |>
+  group_by(hh_median_income_category, urbanicity) |>
+  summarize(mean_academic = mean(topic_academic_program)) |>
+  pivot_wider(
+    names_from = hh_median_income_category,
+    values_from = mean_academic
+  ) |>
+  mutate(ATE = low_median_income - medium_median_income)
+
+ate_academic_low_income
+```
+
+In this last analysis, I looked at the effect of income on the prevalence of the topic of academic programs in school district statments grouped by geographical areas. The treatment of having a high median income has the largest average treatment effect in rural areas. Among urban areas, there is virtually no difference between neighborhoods with high median income (treatment) or medium median income (control) in terms of how much the topic of academic programs show up in the school district statement. The treatment of having a low median income has the largest average treatment effect in suburban areas. Among rural areas, there is virtually no difference between neighborhoods with low median income (treatment) or medium median income (control). 
